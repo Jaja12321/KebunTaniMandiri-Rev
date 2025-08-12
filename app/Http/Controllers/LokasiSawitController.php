@@ -67,13 +67,13 @@ class LokasiSawitController extends Controller
     // Update the sawit location in the database
     public function update(Request $request, $id)
     {
-        // Validate input
+        // Validasi input, coords wajib JSON string
         $request->validate([
             'nama_lokasi' => 'required|string|max:255',
             'area' => 'required|string|max:255',
             'area_size' => 'required|string',
             'area_type' => 'required|string',
-            'coords' => 'required|array',
+            'coords' => 'required|json',
             'color' => 'nullable|string',
             'stroke_color' => 'nullable|string',
             'stroke_width' => 'nullable|integer',
@@ -87,14 +87,14 @@ class LokasiSawitController extends Controller
             'area' => $request->area,
             'area_size' => $request->area_size,
             'area_type' => $request->area_type,
-            'coords' => json_encode($request->coords),
+            'coords' => json_decode($request->coords, true),
             'color' => $request->color,
             'stroke_color' => $request->stroke_color,
             'stroke_width' => $request->stroke_width,
             'has_area' => $request->has_area,
         ]);
 
-        return redirect()->route('lokasi_sawit2.index')->with('success', 'Lokasi Sawit berhasil diperbarui!');
+        return redirect()->route('lokasi_sawit.index')->with('success', 'Lokasi Sawit berhasil diperbarui!');
     }
 
     // Delete the sawit location

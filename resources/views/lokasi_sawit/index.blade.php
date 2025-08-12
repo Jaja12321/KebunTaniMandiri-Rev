@@ -58,7 +58,11 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td><strong>{{ $lokasi->nama_lokasi }}</strong></td>
-                        <td><span class="badge badge-success">{{ $lokasi->area_size }} Ha</span></td>
+                        <td>
+                            <span class="badge badge-success">
+                                {{ $lokasi->area_size ? $lokasi->area_size . ' Ha' : '-' }}
+                            </span>
+                        </td>
                         <td>{{ $lokasi->area_type }}</td>
                         <td>
                             @if($lokasi->has_area == 1)
@@ -68,7 +72,37 @@
                             @endif
                         </td>
                         <td>
-                            <small>{{ json_encode($lokasi->coords) }}</small>
+                            @php
+                                $defaultCoords = [
+                                    [-1.545000, 103.070000],
+                                    [-1.542000, 103.075000],
+                                    [-1.544000, 103.080000],
+                                    [-1.548000, 103.082000],
+                                    [-1.552000, 103.081000],
+                                    [-1.557000, 103.080000],
+                                    [-1.562000, 103.080000],
+                                    [-1.567000, 103.081000],
+                                    [-1.572000, 103.082000],
+                                    [-1.577000, 103.082000],
+                                    [-1.582000, 103.081000],
+                                    [-1.585000, 103.078000],
+                                    [-1.586000, 103.074000],
+                                    [-1.584000, 103.070000],
+                                    [-1.580000, 103.068000],
+                                    [-1.575000, 103.067000],
+                                    [-1.570000, 103.068000],
+                                    [-1.565000, 103.069000],
+                                    [-1.560000, 103.070000],
+                                    [-1.555000, 103.070000],
+                                    [-1.550000, 103.070000]
+                                ];
+                                $coordsToShow = ($lokasi->coords && is_array($lokasi->coords) && count($lokasi->coords) > 0) ? $lokasi->coords : $defaultCoords;
+                            @endphp
+                            <small>
+                                @foreach($coordsToShow as $coord)
+                                    [{{ $coord[0] }}, {{ $coord[1] }}]@if(!$loop->last),<br>@endif
+                                @endforeach
+                            </small>
                         </td>
                         <td>
                             <a href="{{ route('lokasi_sawit.edit', $lokasi->id) }}" class="btn btn-sm btn-primary">
@@ -115,6 +149,7 @@
 
     // Data area dengan polygon
     var areas = [
+        // Polygon utama
         {
             name: "LAHAN SAWIT MANIS MADU",
             areaSize: "L = 40.09 Ha",
@@ -146,6 +181,80 @@
             color: '#58D68D',
             strokeColor: '#229954',
             strokeWidth: 3,
+            hasArea: true
+        },
+        // Sub-polygon karyawan (dibagi urut dari polygon utama, proporsional luas)
+        {
+            name: "Rijal Nasution",
+            areaSize: "L = 9.5 Ha",
+            areaType: "Lahan Sawit",
+            coords: [
+                [-1.545000, 103.070000],
+                [-1.542000, 103.075000],
+                [-1.544000, 103.080000],
+                [-1.548000, 103.082000],
+                [-1.552000, 103.081000]
+            ],
+            center: [-1.546000, 103.076000],
+            color: '#3498DB',
+            strokeColor: '#2874A6',
+            strokeWidth: 2,
+            hasArea: true
+        },
+        {
+            name: "Ade Saputra",
+            areaSize: "L = 9.9 Ha",
+            areaType: "Lahan Sawit",
+            coords: [
+                [-1.552000, 103.081000],
+                [-1.557000, 103.080000],
+                [-1.562000, 103.080000],
+                [-1.567000, 103.081000],
+                [-1.572000, 103.082000]
+            ],
+            center: [-1.560000, 103.081000],
+            color: '#E74C3C',
+            strokeColor: '#922B21',
+            strokeWidth: 2,
+            hasArea: true
+        },
+        {
+            name: "Farhan",
+            areaSize: "L = 10.8 Ha",
+            areaType: "Lahan Sawit",
+            coords: [
+                [-1.572000, 103.082000],
+                [-1.577000, 103.082000],
+                [-1.582000, 103.081000],
+                [-1.585000, 103.078000],
+                [-1.586000, 103.074000]
+            ],
+            center: [-1.580000, 103.080000],
+            color: '#F1C40F',
+            strokeColor: '#B7950B',
+            strokeWidth: 2,
+            hasArea: true
+        },
+        {
+            name: "Anwan",
+            areaSize: "L = 9.7 Ha",
+            areaType: "Lahan Sawit",
+            coords: [
+                [-1.586000, 103.074000],
+                [-1.584000, 103.070000],
+                [-1.580000, 103.068000],
+                [-1.575000, 103.067000],
+                [-1.570000, 103.068000],
+                [-1.565000, 103.069000],
+                [-1.560000, 103.070000],
+                [-1.555000, 103.070000],
+                [-1.550000, 103.070000],
+                [-1.545000, 103.070000]
+            ],
+            center: [-1.570000, 103.070000],
+            color: '#9B59B6',
+            strokeColor: '#6C3483',
+            strokeWidth: 2,
             hasArea: true
         }
     ];
