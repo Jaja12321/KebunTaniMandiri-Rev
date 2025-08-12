@@ -9,40 +9,46 @@ use Carbon\Carbon;
 
 class KehadiranController extends Controller
 {
-  public function index(Request $request)
+    // Menampilkan data kehadiran dengan filter tanggal
+    public function index(Request $request)
 {
-    $query = Kehadiran::with('karyawan')->orderBy('tanggal', 'desc');
+    $tanggal = $request->input('tanggal', Carbon::today()->toDateString());
 
-    $tanggal = $request->input('tanggal');
+    // Ambil semua karyawan dengan paginasi, beserta kehadirannya pada tanggal yang dipilih
+    $karyawans = Karyawan::with(['kehadiran' => function ($query) use ($tanggal) {
+        $query->whereDate('tanggal', $tanggal); // Filter berdasarkan tanggal
+    }])->orderBy('nama_lengkap')->paginate(10); // Paginasi ditambahkan
 
-    // Jika tanggal ada, filter penuh berdasarkan format Y-m-d
-    if ($tanggal) {
-        $query->whereDate('tanggal', $tanggal);
+    return view('kehadiran.index', compact('karyawans', 'tanggal'));
+}
+    // Menampilkan form untuk menambah data kehadiran
+   public function create(Request $request)
+{
+    // Get the employee data using the karyawan_id passed in the URL
+    $karyawan = Karyawan::find($request->karyawan_id);
+
+    // If no employee is found, you can handle it with an error or redirect
+    if (!$karyawan) {
+        return redirect()->route('kehadiran.index')->with('error', 'Karyawan tidak ditemukan');
     }
 
-    $kehadiran = $query->paginate(10);
-
-    return view('kehadiran.index', compact('kehadiran', 'tanggal'));
+    // Pass the employee data to the view
+    return view('kehadiran.create', compact('karyawan'));
 }
 
 
-    public function create()
-    {
-        $this->authorizeMandor();
-
-        $karyawans = Karyawan::orderBy('nama_lengkap')->get();
-
-        return view('kehadiran.create', compact('karyawans'));
-    }
-
+    // Menyimpan data kehadiran yang baru
     public function store(Request $request)
     {
         $this->authorizeMandor();
 
+        // Validasi data input
         $validated = $this->validateData($request);
 
+        // Hitung jam kerja dan lembur
         [$jamKerja, $jamLembur, $totalGajiLembur] = $this->hitungJamDanLembur($validated);
 
+        // Simpan data kehadiran
         Kehadiran::create(array_merge($validated, [
             'jam_kerja' => $jamKerja,
             'jam_lembur' => $jamLembur,
@@ -52,6 +58,16 @@ class KehadiranController extends Controller
         return redirect()->route('kehadiran.index')->with('success', 'Data kehadiran berhasil disimpan.');
     }
 
+    public function history($karyawan_id)
+{
+    // Ambil karyawan dan semua data kehadirannya
+    $karyawan = Karyawan::with('kehadiran')->findOrFail($karyawan_id);
+
+    // Tampilkan halaman history kehadiran
+    return view('kehadiran.history', compact('karyawan'));
+}
+
+    // Menampilkan form untuk mengedit data kehadiran
     public function edit($id)
     {
         $this->authorizeMandor();
@@ -62,6 +78,7 @@ class KehadiranController extends Controller
         return view('kehadiran.edit', compact('kehadiran', 'karyawans'));
     }
 
+    // Memperbarui data kehadiran
     public function update(Request $request, $id)
     {
         $this->authorizeMandor();
@@ -70,6 +87,7 @@ class KehadiranController extends Controller
 
         [$jamKerja, $jamLembur, $totalGajiLembur] = $this->hitungJamDanLembur($validated);
 
+        // Update data kehadiran
         $kehadiran = Kehadiran::findOrFail($id);
         $kehadiran->update(array_merge($validated, [
             'jam_kerja' => $jamKerja,
@@ -80,6 +98,7 @@ class KehadiranController extends Controller
         return redirect()->route('kehadiran.index')->with('success', 'Data kehadiran berhasil diperbarui.');
     }
 
+    // Menghapus data kehadiran
     public function destroy($id)
     {
         $this->authorizeMandor();
@@ -90,9 +109,7 @@ class KehadiranController extends Controller
         return redirect()->route('kehadiran.index')->with('success', 'Data kehadiran berhasil dihapus.');
     }
 
-    /**
-     * Validasi input request.
-     */
+    // Validasi input request untuk kehadiran
     private function validateData(Request $request)
     {
         $validated = $request->validate([
@@ -117,16 +134,14 @@ class KehadiranController extends Controller
         return $validated;
     }
 
-    /**
-     * Hitung jam kerja, jam lembur, total gaji lembur.
-     */
+    // Menghitung jam kerja, jam lembur, dan total gaji lembur
     private function hitungJamDanLembur($data)
     {
         $waktuMasuk = Carbon::createFromFormat('H:i', $data['waktu_masuk']);
         $waktuKeluar = Carbon::createFromFormat('H:i', $data['waktu_keluar']);
 
         if ($waktuKeluar->lessThan($waktuMasuk)) {
-            $waktuKeluar->addDay(); // kalau shift malam
+            $waktuKeluar->addDay(); // jika shift malam
         }
 
         $jamKerja = $waktuMasuk->diffInMinutes($waktuKeluar) / 60;
@@ -140,13 +155,13 @@ class KehadiranController extends Controller
         ];
     }
 
-    /**
-     * Mengecek apakah user punya role mandor.
-     */
+    // Mengecek apakah user memiliki role "mandor"
     private function authorizeMandor()
     {
         if (!auth()->user()->hasRole('mandor')) {
             abort(403, 'Anda tidak diizinkan untuk melakukan aksi ini.');
         }
     }
+
+    
 }

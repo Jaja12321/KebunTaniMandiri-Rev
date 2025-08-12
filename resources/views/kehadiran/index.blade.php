@@ -43,7 +43,7 @@
 <div class="card shadow-sm mb-4">
     <div class="card-body">
         <div class="table-responsive">
-            @if($kehadiran->count() > 0)
+            @if($karyawans->count() > 0)
             <table class="table table-bordered table-hover text-center align-middle">
                 <thead class="table-dark text-white small">
                     <tr>
@@ -51,50 +51,59 @@
                         <th>Nama</th>
                         <th>Tanggal</th>
                         <th>Status</th>
+                        <th>Kehadiran</th>
                         <th>Masuk</th>
                         <th>Keluar</th>
                         <th>Jam Kerja</th>
                         <th>Lembur</th>
-                        @if(auth()->user()->hasRole('mandor')) <th>Aksi</th> @endif
+                        <th>History Kehadiran</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($kehadiran as $item)
+                    @foreach ($karyawans as $index => $karyawan)
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td class="text-start">{{ $item->karyawan->nama_lengkap ?? '-' }}</td>
-                        <td>{{ $item->tanggal }}</td>
+                        <td>{{ $index + 1 }}</td>
+                        <td class="text-start">{{ $karyawan->nama_lengkap }}</td>
+                        <td>{{ $selectedTanggal }}</td>
                         <td>
-                            <span class="badge bg-{{ $item->status == 'Hadir' ? 'success' : ($item->status == 'Izin' ? 'warning' : 'secondary') }}">
-                                {{ ucfirst($item->status) }}
-                            </span>
+                            @if ($karyawan->kehadiran->isNotEmpty())
+                                <span class="badge bg-{{ $karyawan->kehadiran->first()->status == 'Hadir' ? 'success' : ($karyawan->kehadiran->first()->status == 'Izin' ? 'warning' : 'secondary') }}">
+                                    {{ ucfirst($karyawan->kehadiran->first()->status) }}
+                                </span>
+                            @else
+                                <span class="badge bg-secondary">Belum Hadir</span>
+                            @endif
                         </td>
-                        <td>{{ $item->waktu_masuk }}</td>
-                        <td>{{ $item->waktu_keluar }}</td>
-                        <td>{{ $item->jam_kerja }}</td>
-                        <td>{{ $item->jam_lembur }}</td>
-                        @if(auth()->user()->hasRole('mandor'))
                         <td>
-                            <div class="d-flex justify-content-center gap-2">
-                                <a href="{{ route('kehadiran.edit', $item->id) }}" class="btn btn-sm btn-primary d-flex align-items-center gap-1 px-2 py-1">
-                                    <i class="fas fa-edit"></i> Edit
-                                </a>
-                                <form action="{{ route('kehadiran.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1 px-2 py-1">
-                                        <i class="fas fa-trash"></i> Hapus
-                                    </button>
-                                </form>
-                            </div>
+                            @if ($karyawan->performa)
+                                {{ $karyawan->performa }}
+                            @else
+                                Belum Hadir
+                            @endif
                         </td>
-                        @endif
+                        <td>{{ $karyawan->kehadiran->first()->waktu_masuk ?? '-' }}</td>
+                        <td>{{ $karyawan->kehadiran->first()->waktu_keluar ?? '-' }}</td>
+                        <td>{{ $karyawan->kehadiran->first()->jam_kerja ?? '-' }}</td>
+                        <td>{{ $karyawan->kehadiran->first()->jam_lembur ?? '-' }}</td>
+                        <td>
+                            <a href="{{ route('kehadiran.history', $karyawan->id) }}" class="btn btn-sm btn-info">
+                                History Kehadiran
+                            </a>
+                        </td>
+                        <td>
+                            <!-- Tombol untuk menambahkan kehadiran -->
+                            <a href="{{ route('kehadiran.create', ['karyawan_id' => $karyawan->id]) }}" class="btn btn-sm btn-success">
+                                Tambah Kehadiran
+                            </a>
+                        </td>
                     </tr>
                     @endforeach
                 </tbody>
             </table>
 
             <div class="mt-3 d-flex justify-content-center">
-                {{ $kehadiran->links() }}
+                {{ $karyawans->links() }}  <!-- Paginasi ditampilkan di sini -->
             </div>
             @else
             <div class="alert alert-info text-center">
@@ -105,16 +114,11 @@
     </div>
 </div>
 
-<!-- Tombol Kembali & Tambah -->
+<!-- Tombol Kembali -->
 <div class="d-flex justify-content-end align-items-center gap-2 mt-3">
     <a href="{{ route('fitur.index') }}" class="btn btn-md btn-secondary text-white fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm">
         <i class="fas fa-arrow-left"></i> <span>Kembali</span>
     </a>
-    @if(auth()->user()->hasRole('mandor'))
-    <a href="{{ route('kehadiran.create') }}" class="btn btn-md btn-success text-white fw-semibold px-4 py-2 d-flex align-items-center gap-2 shadow-sm">
-        <i class="fas fa-plus-circle"></i> <span>Tambah Kehadiran</span>
-    </a>
-    @endif
 </div>
 
 @endsection

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Karyawan;
 use App\Models\LokasiSawit;
+use App\Models\LokasiSawit2;
 use App\Models\Panen;
 use App\Models\RekapKerja;
 use App\Models\Kehadiran;
@@ -22,7 +23,6 @@ class HomeController extends Controller
     {
         // Data summary
         $jumlahKaryawan = Karyawan::count();
-        $luasLahan = LokasiSawit::sum('luas_lahan');
         
         $bulanIni = Carbon::now()->month;
         $tahunIni = Carbon::now()->year;
@@ -97,12 +97,9 @@ class HomeController extends Controller
             $pengeluaranData[$i - 1] = $value;
         }
 
-        // Data status tanaman
-        $statusTanaman = LokasiSawit::select('nama_lokasi', 'kondisi_tanaman')->get();
-
+    
         return view('home', compact(
             'jumlahKaryawan',
-            'luasLahan',
             'panenBulanIni',
             'totalPendapatan',
             'totalPengeluaran',
@@ -111,7 +108,6 @@ class HomeController extends Controller
             'produksiData',
             'pendapatanData',
             'pengeluaranData',
-            'statusTanaman'  // Data yang dikirim ke view
         ));
     }
 }

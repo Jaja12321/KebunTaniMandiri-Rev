@@ -191,3 +191,8 @@ Route::get('/rekap-kerja/slip-gaji/print/{id}', [RekapKerjaController::class, 'g
 Route::get('/dashboard', function () {
     return view('dashboard'); // Ganti 'dashboard' dengan tampilan yang sesuai dengan aplikasi Anda
 })->name('dashboard');  // Menambahkan nama rute 'dashboard'
+
+// Route untuk melihat history kehadiran karyawan
+Route::get('/kehadiran/history/{karyawan_id}', [KehadiranController::class, 'history'])->name('kehadiran.history');
+ 
+Route::resource('lokasi_sawit2', LokasiSawitController::class);

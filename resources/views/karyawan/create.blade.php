@@ -27,21 +27,21 @@
                 </div>
 
                 <!-- Jabatan -->
-                <div class="form-group mt-3">
-                    <label for="jabatan">Jabatan</label>
-                    <select class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" required onchange="toggleOtherJabatan(this)">
-                        <option value="Petani Aktif" {{ old('jabatan') == 'Petani Aktif' ? 'selected' : '' }}>Petani Aktif</option>
-                        <option value="Pemupuk" {{ old('jabatan') == 'Pemupuk' ? 'selected' : '' }}>Pemupuk</option>
-                        <option value="Mandor" {{ old('jabatan') == 'Mandor' ? 'selected' : '' }}>Mandor</option>
-                        <option value="Pengawas Kebun" {{ old('jabatan') == 'Pengawas Kebun' ? 'selected' : '' }}>Pengawas Kebun</option>
-                        <option value="Pekerja Panen" {{ old('jabatan') == 'Pekerja Panen' ? 'selected' : '' }}>Pekerja Panen</option>
-                        <option value="Operator Alat Berat" {{ old('jabatan') == 'Operator Alat Berat' ? 'selected' : '' }}>Operator Alat Berat</option>
-                        <option value="Lainnya" {{ old('jabatan') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                    </select>
-                    @error('jabatan')
-                        <span class="text-danger">{{ $message }}</span>
-                    @enderror
-                </div>
+                    <div class="form-group mt-3">
+    <label for="jabatan">Jabatan</label>
+    <select class="form-control @error('jabatan') is-invalid @enderror" id="jabatan" name="jabatan" required onchange="toggleOtherJabatan(this)">
+        <option value="Petani Aktif" {{ old('jabatan') == 'Petani Aktif' ? 'selected' : '' }}>Petani Aktif</option>
+        <option value="Pemupuk" {{ old('jabatan') == 'Pemupuk' ? 'selected' : '' }}>Pemupuk</option>
+        <option value="Mandor" {{ old('jabatan') == 'Mandor' ? 'selected' : '' }}>Mandor</option>
+        <option value="Pekerja Panen" {{ old('jabatan') == 'Pekerja Panen' ? 'selected' : '' }}>Pekerja Panen</option>
+        <option value="Operator Alat Berat" {{ old('jabatan') == 'Operator Alat Berat' ? 'selected' : '' }}>Operator Alat Berat</option>
+        <option value="Lainnya" {{ old('jabatan') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+    </select>
+    @error('jabatan')
+        <span class="text-danger">{{ $message }}</span>
+    @enderror
+</div>
+
 
                 <!-- Input untuk jabatan Lainnya -->
                 <div class="form-group mt-3" id="jabatan-lainnya" style="display:none;">

@@ -31,7 +31,6 @@
     <div class="row g-4">
         @foreach ([
             ['title' => 'Jumlah Karyawan', 'value' => $jumlahKaryawan, 'icon' => 'users', 'color' => 'primary'],
-            ['title' => 'Luas Lahan (Ha)', 'value' => number_format($luasLahan, 2, ',', '.'), 'icon' => 'tree', 'color' => 'success'],
             ['title' => 'Panen Bulan Ini (Kg)', 'value' => number_format($panenBulanIni, 0, ',', '.'), 'icon' => 'tractor', 'color' => 'info'],
             ['title' => 'Kehadiran Hari Ini', 'value' => $kehadiranHariIni, 'icon' => 'calendar-check', 'color' => 'warning'],
             ['title' => 'Total Pendapatan', 'value' => 'Rp ' . number_format($totalPendapatan, 0, ',', '.'), 'icon' => 'dollar-sign', 'color' => 'warning'],
@@ -86,34 +85,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Status Tanaman Table -->
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header font-weight-bold py-2 text-center">Status Tanaman</div>
-                <div class="card-body p-1">
-                    <table class="table table-striped table-hover table-sm mb-0" style="font-size: 0.85rem;">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th class="py-1">Nama Lokasi</th>
-                                <th class="py-1">Status Tanaman</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($statusTanaman as $status)
-                            <tr>
-                                <td class="py-1">{{ $status->nama_lokasi }}</td>
-                                <td class="py-1">{{ $status->kondisi_tanaman }}</td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
 
 <!-- Chart.js Script -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
